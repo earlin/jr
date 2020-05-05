@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- <script src="./vendor/babylon.js"></script> -->
+  <!-- <script src="./vendor/cuid.min.js"></script> -->
+  <script src="node_modules/babylonjs/babylon.max.js"></script>
+  <!-- <script src="./vendor/babylon.glTF2FileLoader.js"></script> -->
+  <link rel="stylesheet" href="main.css">
+</head>
+
+<body>
+  <main>
+    <section>
+        <form>
+          <Label>Add <select></select> character:</Label>
+          <button>Confirm</button>
+        </form>
+      <table>
+        <thead>
+          <tr>
+            <td></td>
+            <td>Garage</td>
+            <td>Living Room</td>
+            <td>Kids Room</td>
+            <td>Outside</td>
+            <td>Light bulb</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="7">No character added</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+    <section class="render">
+      <canvas width="600" height="600"></canvas>
+    </section>
+  </main>
+  <script src="main.js" type="module"></script>
+</body>
+
+</html>
