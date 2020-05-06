@@ -61,8 +61,10 @@ function createLightbulbCheckboxUI(character) {
     character[input.checked ? "showLightbulb" : "hideLightbulb"]();
   };
 
-  cell.onclick = () => {
-    input.click();
+  cell.onclick = event => {
+    if (event.target === cell) {
+      input.click();
+    }
   };
 
   return [cell, input];

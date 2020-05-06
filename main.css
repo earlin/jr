@@ -10,22 +10,37 @@ html, body {
 
 main {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "form canvas"
+    "table canvas"
+  ;
+  align-items: center;
+  justify-content: center;
   height: 100%;
 }
 
-main section {
+.render {
   display: flex;
+  grid-area: canvas;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: center;
   flex-direction: column;
   padding: 2rem;
   overflow: auto;
 }
 
-main section > * {
-  margin-bottom: 1rem;
+.character-form {
+  height: 100px;
+  grid-area: form;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.characters {
+  grid-area: table;
 }
 
 table {
@@ -63,4 +78,5 @@ td {
 
 .render canvas {
   touch-action: none;
+  max-height: 100vh;
 }

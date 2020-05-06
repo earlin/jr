@@ -5,18 +5,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <script src="./vendor/babylon.max.js"></script>
   <link rel="stylesheet" href="main.css">
+  <script src="vendor/babylon.js"></script>
 </head>
 
 <body>
   <main>
-    <section>
-        <form>
+        <form class="character-form">
           <Label>Add <select></select> character:</Label>
           <button>Confirm</button>
         </form>
-      <table>
+      <table class="characters">
         <thead>
           <tr>
             <td></td>
@@ -33,7 +32,6 @@
           </tr>
         </tbody>
       </table>
-    </section>
     <section class="render">
       <canvas width="600" height="600"></canvas>
     </section>
