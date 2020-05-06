@@ -10,7 +10,7 @@ export function addFormSubmitListener(listener) {
   });
 }
 
-function createRoomRadioCell(character, room, initial, lightbulb) {
+function createRoomRadioCell(character, room, lightbulb) {
 
   const cell = document.createElement("td");
   const input = document.createElement("input");
@@ -26,14 +26,32 @@ function createRoomRadioCell(character, room, initial, lightbulb) {
 
   input.type = "radio";
   input.name = character.id;
-  input.checked = initial;
+  input.checked = room === character.room;
 
-  input.onchange = () => {
+  const selector = `[name=${character.id}].marked`;
+
+  input.onchange = async () => {
+
+    const marked = document.querySelector(selector);
 
     lightbulb.disabled = room == null;
 
     if (input.checked) {
-      character.goToRoom(room);
+
+      const previous = character.room;
+
+      await character.goToRoom(room);
+
+      if (character.room != room) {
+        character.room = previous;
+        if (marked)
+          marked.checked = true;
+      } else {
+        input.classList.add('marked');
+        if (marked)
+          marked.classList.remove('marked');
+      }
+
     }
   };
 
@@ -55,7 +73,7 @@ function createLightbulbCheckboxUI(character) {
 
   input.type = "checkbox";
   input.checked = false;
-  input.disabled = true;
+  input.disabled = character.room == null;
 
   input.onchange = () => {
     character[input.checked ? "showLightbulb" : "hideLightbulb"]();
@@ -82,8 +100,8 @@ export function createCharacterUI(character, rooms) {
 
   const [last, lightbulb] = createLightbulbCheckboxUI(character);
 
-  const cells = rooms.map((room) => createRoomRadioCell(character, room, false, lightbulb));
-  const nowhere = createRoomRadioCell(character, null, true, lightbulb);
+  const cells = rooms.map((room) => createRoomRadioCell(character, room, lightbulb));
+  const nowhere = createRoomRadioCell(character, null, lightbulb);
 
   row.append(name, ...cells, nowhere, last);
 

@@ -1,12 +1,19 @@
 import { scene } from "./setup.js";
 
+const {
+  Mesh,
+  StandardMaterial,
+  Color3,
+  BoundingBox,
+} = BABYLON;
+
 export default class Room {
 
   constructor(name, x, y, z) {
     this.name = name;
     this.mesh = Room.mesh(x, y, z);
     this.box = Room.box(this.mesh);
-    this.color = Room.color(this.mesh, new BABYLON.Color3(Math.random(), Math.random(), Math.random()));
+    this.color = Room.color(this.mesh, new Color3(Math.random(), Math.random(), Math.random()));
     this.characters = new Set();
   }
 
@@ -26,7 +33,7 @@ export default class Room {
 
   static color(mesh, color) {
 
-    const material = new BABYLON.StandardMaterial("material", scene);
+    const material = new StandardMaterial("material", scene);
   
     material.diffuseColor = color;
 
@@ -46,18 +53,20 @@ export default class Room {
 
     minimum.x += 1; minimum.z += 1;
     maximum.x -= 1; maximum.z -= 1;
-    minimum.y += 2;
+    minimum.y += 1;
 
-    return new BABYLON.BoundingBox(minimum, maximum);
+    return new BoundingBox(minimum, maximum);
 
   }
 
   static mesh(x, y, z) {
 
-    const mesh = BABYLON.Mesh.CreateGround('room', 10, 10, 0, scene);
+    const mesh = Mesh.CreateBox('room', 10, scene).flipFaces(true);
+
+    mesh.receiveShadows = true;
 
     // mesh.showBoundingBox = true;
-    mesh.position.set(x, y, z);
+    mesh.position.set(x, y + 5, z);
 
     return mesh;
 

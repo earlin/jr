@@ -1,17 +1,15 @@
 import Character from "./Character.js";
 
-import { scene } from "./setup.js";
-
 export default class CharacterKind {
 
-  constructor(name, url) {
+  constructor(name, color) {
     this.name = name;
-    this.manager = new BABYLON.SpriteManager('sprite-manager', url, 40, 500, scene);
+    this.color = BABYLON.Color3.FromHexString(color);
     this.uuid = 0;
   }
 
   full() {
-    return this.manager.sprites.length === 40;
+    return this.uuid === 8;
   }
 
   instanciate() {

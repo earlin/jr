@@ -1,11 +1,25 @@
 import { scene } from "./setup.js";
-import { ENTRY_OFFSET, LIGHTBULB_OFFSET, CHARACTER_SIZE, LIGHTBULB_SIZE } from "./constants.js";
+import { ENTRY_OFFSET, LIGHTBULB_OFFSET, LIGHTBULB_SIZE } from "./constants.js";
 import { animation, play, putInsideBox } from "./utils.js";
 
-const elastic = new BABYLON.ElasticEase(1, 0.1);
-elastic.setEasingMode(BABYLON.EasingFunction.EASINGMODE_EASEIN);
+const {
+  ElasticEase,
+  SpriteManager,
+  EasingFunction,
+  Mesh,
+  StandardMaterial,
+  Sprite,
+  Animation,
+  Vector3,
+} = BABYLON;
 
-const lightbulbs = new BABYLON.SpriteManager('lightbulbs', "./assets/idea.png", 120, 500, scene);
+const zero = Vector3.Zero();
+const one = Vector3.One();
+
+const elastic = new ElasticEase(1, 0.1);
+elastic.setEasingMode(EasingFunction.EASINGMODE_EASEIN);
+
+const lightbulbs = new SpriteManager('lightbulbs', "./assets/idea.png", 120, 500, scene);
 
 export default class Character {
 
@@ -15,13 +29,19 @@ export default class Character {
     this.uuid = uuid;
     this.room = null;
 
-    this.idea = false;
+    /** @type {Mesh} */
+    const mesh = this.mesh = new Mesh.CreateBox("box", 2, scene);
 
-    const sprite = this.sprite = new BABYLON.Sprite("sprite", kind.manager);
-    const bulb = this.lightbulb = new BABYLON.Sprite("lightbulb", lightbulbs);
+    // mesh.receiveShadows = true;
 
-    sprite.size = CHARACTER_SIZE;
-    sprite.isVisible = false;
+    mesh.isVisible = false;
+    // mesh.showBoundingBox = true;
+
+    const material = mesh.material = new StandardMaterial("material", scene);
+
+    material.diffuseColor = kind.color;
+
+    const bulb = this.lightbulb = new Sprite("lightbulb", lightbulbs);
 
     bulb.size = LIGHTBULB_SIZE;
     bulb.isVisible = false;
@@ -46,51 +66,53 @@ export default class Character {
         await this.moveBetweenRooms(current, next);
         break;
     }
+
+    // console.log(this.mesh.position.toString());
+
   }
 
   async enterRoom(room) {
-    if (room.addCharacter(this)) {
 
-      const sprite = this.sprite;
-      const position = sprite.position;
+    const mesh = this.mesh;
+    const position = mesh.position;
 
-      putInsideBox(position, room.box);
+    if (putInsideBox(room.box, mesh, room.characters) && room.addCharacter(this)) {
 
       const start = position.add(ENTRY_OFFSET);
-      const size = CHARACTER_SIZE;
 
       const scale = animation(
-        'scale', 'size',
+        'scale', 'scaling',
         [
-          [0, 0.5 * size],
-          [3, 1.2 * size],
-          [5, size]
-        ]
+          [0, zero],
+          [2, one.scale(0.5)],
+          [3, one.scale(1.2)],
+          [5, one]
+        ],
+        Animation.ANIMATIONTYPE_VECTOR3
       );
 
       const movement = animation(
         'movement', 'position',
         [
           [0, position],
-          [3,    start],
+          [3, start],
           [5, position]
         ],
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3
+        Animation.ANIMATIONTYPE_VECTOR3
       );
 
-      sprite.animations = [scale, movement];
-      sprite.isVisible = true;
+      mesh.animations = [scale, movement];
+      mesh.isVisible = true;
 
-      
       movement.setEasingFunction(elastic)
-      
+
       if (this.idea) {
         await Promise.all([
-          play(sprite, 5),
+          play(mesh, 5),
           this.showLightbulb(),
         ]);
       } else {
-        await play(sprite, 5);
+        await play(mesh, 5);
       }
 
     }
@@ -99,19 +121,19 @@ export default class Character {
   async leaveRoom(room) {
     if (room.deleteCharacter(this)) {
 
-      const sprite = this.sprite;
-      const position = sprite.position;
-      const size = CHARACTER_SIZE;
+      const mesh = this.mesh;
+      const position = mesh.position;
 
       const end = position.add(ENTRY_OFFSET);
 
       const scale = animation(
-        'scale', 'size',
+        'scale', 'scaling',
         [
-          [0,       size],
-          [3, 1.5 * size],
-          [5, 0]
-        ]
+          [0, one],
+          [3, one.scale(1.5)],
+          [5, zero]
+        ],
+        Animation.ANIMATIONTYPE_VECTOR3
       );
 
       const movement = animation(
@@ -120,28 +142,22 @@ export default class Character {
           [0, position],
           [5, end]
         ],
-        BABYLON.Animation.ANIMATIONTYPE_VECTOR3
+        Animation.ANIMATIONTYPE_VECTOR3
       );
 
-      sprite.animations = [scale, movement];
+      mesh.animations = [scale, movement];
 
-      await play(sprite, 5);
-
-      sprite.isVisible = false;
-      
       if (this.idea) {
         await Promise.all([
-          play(sprite, 5),
+          play(mesh, 5),
           this.hideLightbulb(),
         ]);
         this.idea = true;
       } else {
-        await play(sprite, 5);
+        await play(mesh, 5);
       }
 
-      await Promise.resolve();
-
-      sprite.size = size;
+      mesh.isVisible = false;
 
     }
   }
@@ -153,7 +169,7 @@ export default class Character {
 
   _updateLightbulbPosition() {
     this.lightbulb.position =
-      this.sprite.position.add(LIGHTBULB_OFFSET);
+      this.mesh.position.add(LIGHTBULB_OFFSET);
   }
 
   async showLightbulb() {
@@ -170,9 +186,9 @@ export default class Character {
       'movement', 'position',
       [
         [0, position],
-        [5, position.add(BABYLON.Vector3.Down())]
+        [5, position.add(Vector3.Down())]
       ],
-      BABYLON.Animation.ANIMATIONTYPE_VECTOR3
+      Animation.ANIMATIONTYPE_VECTOR3
     );
 
     const size = LIGHTBULB_SIZE;

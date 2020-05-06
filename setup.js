@@ -17,6 +17,7 @@ export const engine = new Engine(canvas, false);
 export const scene = new Scene(engine);
 
 // scene.clearColor.set(0.2, 0.2, 0.2, 1);
+// scene.debugLayer.show();
 
 export const camera = new ArcRotateCamera('camera', deg(45), deg(45), 50, new Vector3(0, 0, 0), scene);
 

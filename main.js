@@ -7,6 +7,8 @@ import {
   createCharacterUI
 } from "./ui.js";
 
+import { pickOrNull } from "./utils.js";
+
 const rooms = [
   new Room("Garage", +5, +5, -5),
   new Room("Living", -5, +5, +5),
@@ -14,8 +16,8 @@ const rooms = [
 ];
 
 const kinds = [
-  new CharacterKind("Boy", "./assets/Boy.png"),
-  new CharacterKind("Girl", "./assets/Girl.png"),
+  new CharacterKind("Boy", "#0088FF"),
+  new CharacterKind("Girl", "#FF0088"),
 ];
 
 kinds.forEach((kind, index) => {
@@ -25,5 +27,8 @@ kinds.forEach((kind, index) => {
 addFormSubmitListener((index) => {
   const kind = kinds[index];
   const character = kind.instanciate();
-  if (character) createCharacterUI(character, rooms);
+  if (character) {
+    character.goToRoom(pickOrNull(rooms));
+    createCharacterUI(character, rooms);
+  }
 });
