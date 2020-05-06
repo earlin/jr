@@ -1,5 +1,5 @@
 import { scene } from "./setup.js";
-import { ENTRY_OFFSET, LIGHTBULB_OFFSET } from "./constants.js";
+import { ENTRY_OFFSET, LIGHTBULB_OFFSET, CHARACTER_SIZE, LIGHTBULB_SIZE } from "./constants.js";
 import { animation, play, putInsideBox } from "./utils.js";
 
 const elastic = new BABYLON.ElasticEase(1, 0.1);
@@ -20,10 +20,10 @@ export default class Character {
     const sprite = this.sprite = new BABYLON.Sprite("sprite", kind.manager);
     const bulb = this.lightbulb = new BABYLON.Sprite("lightbulb", lightbulbs);
 
-    sprite.size = 4;
+    sprite.size = CHARACTER_SIZE;
     sprite.isVisible = false;
 
-    bulb.size = 2;
+    bulb.size = LIGHTBULB_SIZE;
     bulb.isVisible = false;
 
   }
@@ -57,7 +57,7 @@ export default class Character {
       putInsideBox(position, room.box);
 
       const start = position.add(ENTRY_OFFSET);
-      const size = sprite.size;
+      const size = CHARACTER_SIZE;
 
       const scale = animation(
         'scale', 'size',
@@ -101,7 +101,7 @@ export default class Character {
 
       const sprite = this.sprite;
       const position = sprite.position;
-      const size = sprite.size;
+      const size = CHARACTER_SIZE;
 
       const end = position.add(ENTRY_OFFSET);
 
@@ -124,8 +124,6 @@ export default class Character {
       );
 
       sprite.animations = [scale, movement];
-
-      sprite.animations = [scale];
 
       await play(sprite, 5);
 
@@ -171,24 +169,24 @@ export default class Character {
     const movement = animation(
       'movement', 'position',
       [
-        [0, this.sprite.position],
-        [5, position]
+        [0, position],
+        [5, position.add(BABYLON.Vector3.Down())]
       ],
       BABYLON.Animation.ANIMATIONTYPE_VECTOR3
     );
 
-    const size = bulb.size;
+    const size = LIGHTBULB_SIZE;
     const scale = animation(
       'scale', 'size',
       [
         [0, 0],
-        [2, 0],
+        [1, 0],
         [3, 1.5 * size],
         [5, size]
       ]
     );
 
-    bulb.animations = [movement, scale];
+    bulb.animations = [scale, movement];
 
     movement.setEasingFunction(elastic);
 
@@ -205,7 +203,7 @@ export default class Character {
     this.idea = false;
 
     const bulb = this.lightbulb;
-    const size = bulb.size;
+    const size = LIGHTBULB_SIZE;
 
     const scale = animation(
       'scale', 'size',
